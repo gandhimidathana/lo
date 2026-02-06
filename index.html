@@ -28,7 +28,7 @@
       background: radial-gradient(circle at top, var(--bg2), var(--bg1));
       font-family: system-ui, sans-serif;
       padding: 16px;
-      overflow-y: auto;
+      overflow: hidden;
     }
 
     #confettiCanvas {
@@ -39,15 +39,14 @@
     }
 
     .card {
+      position: relative;
       width: min(720px, 92vw);
-      padding: 26px 22px;
+      padding: 26px 22px 40px;
       background: var(--card);
       backdrop-filter: blur(10px);
       border-radius: 22px;
       text-align: center;
       box-shadow: 0 18px 60px rgba(0,0,0,.15);
-      max-height: 90svh;
-      overflow-y: auto;
     }
 
     .top-sticker {
@@ -59,7 +58,7 @@
 
     h1 {
       font-size: clamp(26px, 4vw, 44px);
-      margin-bottom: 18px;
+      margin-bottom: 22px;
     }
 
     .button-zone {
@@ -81,6 +80,7 @@
       cursor: pointer;
       box-shadow: 0 10px 24px rgba(0,0,0,.14);
       transition: transform .15s ease, background .15s ease, opacity .3s ease;
+      z-index: 2;
     }
 
     #yesBtn {
@@ -95,19 +95,28 @@
       color: #111827;
     }
 
-    /* 🌸 BIG CUTE MESSAGE */
+    /* 🌸 CENTER FLOATING MESSAGE (WATERMARK STYLE) */
     .hint {
-      margin-top: 18px;
-      padding: 14px 18px;
-      font-size: 20px;
-      font-weight: 700;
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      pointer-events: none;
+      opacity: 0;
+      transform: scale(.9);
+      transition: opacity .35s ease, transform .35s ease;
+      z-index: 1;
+    }
+
+    .hint span {
+      padding: 18px 26px;
+      font-size: 26px;
+      font-weight: 800;
       color: var(--msgText);
       background: var(--msgBg);
-      border-radius: 18px;
-      display: inline-block;
-      opacity: 0;
-      transform: scale(.95);
-      transition: opacity .3s ease, transform .3s ease;
+      border-radius: 999px;
+      box-shadow: 0 12px 40px rgba(0,0,0,.15);
     }
 
     .hint.show {
@@ -143,9 +152,8 @@
     .no-shake { animation: shake .4s; }
 
     @media (max-width: 480px) {
-      .button-zone { height: 210px; }
       button { font-size: 16px; padding: 14px 22px; }
-      .hint { font-size: 18px; }
+      .hint span { font-size: 22px; }
     }
   </style>
 </head>
@@ -167,7 +175,8 @@
     <button id="noBtn">No 🙂</button>
   </section>
 
-  <div class="hint" id="hint"></div>
+  <!-- 🌸 CENTER MESSAGE -->
+  <div class="hint" id="hint"><span></span></div>
 
   <section class="result" id="result">
     <h2>She said YES 💖</h2>
@@ -181,6 +190,7 @@
   const yesBtn = document.getElementById("yesBtn");
   const noBtn = document.getElementById("noBtn");
   const hint = document.getElementById("hint");
+  const hintText = hint.querySelector("span");
   const zone = document.getElementById("zone");
   const result = document.getElementById("result");
 
@@ -212,14 +222,14 @@
     growYes();
 
     if (noCount < maxMessages) {
-      hint.textContent = noMessages[noCount];
+      hintText.textContent = noMessages[noCount];
       hint.classList.add("show");
       setTimeout(() => hint.classList.remove("show"), 1600);
       noCount++;
       return;
     }
 
-    /* ❗ disable ONLY on next click */
+    // disable NO on next click
     noBtn.style.opacity = "0";
     noBtn.style.pointerEvents = "none";
     yesBtn.style.left = "50%";
@@ -235,7 +245,7 @@
     zone.remove();
     hint.style.display = "none";
     result.style.display = "block";
-    confettiInstance({ particleCount: 280, spread: 150 });
+    confettiInstance({ particleCount: 300, spread: 150 });
   });
 </script>
 
